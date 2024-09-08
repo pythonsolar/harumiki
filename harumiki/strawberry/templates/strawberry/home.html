@@ -2,43 +2,264 @@
 
 {% block content %}
     <h1>Data Visualization</h1>
-    
+
     <!-- กราฟ -->
-    <canvas id="myChart" width="400" height="200"></canvas>
+    <canvas id="myChart" width="400" height="200" style="background-color: white;"></canvas>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         var ctx = document.getElementById('myChart').getContext('2d');
+
+        var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: JSON.parse('{{ dates|escapejs }}'),  // แกนเวลา (วันที่)
+            datasets: [
+                {
+                    label: 'Water pH',
+                    data: JSON.parse('{{ water_ph_values|escapejs }}'),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                    yAxisID: 'y1'  // ใช้แกน y แกนแรก
+                },
+                {
+                    label: 'Water EC',
+                    data: JSON.parse('{{ water_ec_values|escapejs }}'),
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                    yAxisID: 'y2'  // ใช้แกน y แกนที่สอง
+                },
+                {
+                    label: 'Z1 pH1',
+                    data: JSON.parse('{{ z1_ph1_values|escapejs }}'),
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                    yAxisID: 'y1'  // ใช้แกน y แกนแรก
+                },
+                {
+                    label: 'Z1 pH2',
+                    data: JSON.parse('{{ z1_ph2_values|escapejs }}'),
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                    yAxisID: 'y1'  // ใช้แกน y แกนแรก
+                },
+                {
+                    label: 'Z1 EC1',
+                    data: JSON.parse('{{ z1_ec1_values|escapejs }}'),
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                    yAxisID: 'y2'  // ใช้แกน y แกนที่สอง
+                },
+                {
+                    label: 'Z1 EC2',
+                    data: JSON.parse('{{ z1_ec2_values|escapejs }}'),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                    yAxisID: 'y2'  // ใช้แกน y แกนที่สอง
+                },
+                {
+                    label: 'Z1 ML',
+                    data: JSON.parse('{{ z1_ml_values|escapejs }}'),
+                    borderColor: 'rgba(201, 203, 207, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                    yAxisID: 'y3'  // ใช้แกน y แกนที่สาม
+                },
+                {
+                    label: 'Z1 RH',
+                    data: JSON.parse('{{ z1_rh_values|escapejs }}'),
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                    yAxisID: 'y3'  // ใช้แกน y แกนที่สาม
+                }
+            ]
+        },
+        options: {
+            spanGaps: true,
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'pH'
+                    },
+                    beginAtZero: true
+                },
+                y2: {
+                    type: 'linear',
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'EC'
+                    },
+                    beginAtZero: true,
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                },
+                y3: {
+                    type: 'linear',
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'ML and RH'
+                    },
+                    beginAtZero: true,
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'black' // เปลี่ยนสีข้อความใน legend
+                    }
+                }
+            },
+            backgroundColor: 'white'  // เพิ่มการตั้งค่าสำหรับพื้นหลังสีขาว
+        }
+    });
+
+    </script>
+
+
+    <!-- ตาราง -->
+    <h2>Data Table</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Water pH</th>
+                <th>Water EC</th>
+                <th>Z1 pH1</th>
+                <th>Z1 pH2</th>
+                <th>Z1 EC1</th>
+                <th>Z1 EC2</th>
+                <th>Z1 ML</th>
+                <th>Z1 RH</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for measurement in measurements %}
+            <tr>
+                <td>{{ measurement.date }}</td>
+                <td>{{ measurement.water_ph|default_if_none:"0" }}</td>
+                <td>{{ measurement.water_ec|default_if_none:"0" }}</td>
+                <td>{{ measurement.z1_ph1|default_if_none:"0" }}</td>
+                <td>{{ measurement.z1_ph2|default_if_none:"0" }}</td>
+                <td>{{ measurement.z1_ec1|default_if_none:"0" }}</td>
+                <td>{{ measurement.z1_ec2|default_if_none:"0" }}</td>
+                <td>{{ measurement.z1_ml|default_if_none:"0" }}</td>
+                <td>{{ measurement.z1_rh|default_if_none:"0" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Filter by date form -->
+    <form method="get">
+        <label for="date">Filter by date:</label>
+        <input type="date" id="date" name="date" value="{{ request.GET.date }}">
+        <button type="submit">Filter</button>
+    </form>
+
+    <script>
+        var dates = JSON.parse('{{ dates|escapejs }}');
+        var waterPhValues = JSON.parse('{{ water_ph_values|escapejs }}');
+        var waterEcValues = JSON.parse('{{ water_ec_values|escapejs }}');
+        var z1Ph1Values = JSON.parse('{{ z1_ph1_values|escapejs }}');
+        var z1Ph2Values = JSON.parse('{{ z1_ph2_values|escapejs }}');
+        var z1Ec1Values = JSON.parse('{{ z1_ec1_values|escapejs }}');
+        var z1Ec2Values = JSON.parse('{{ z1_ec2_values|escapejs }}');
+        var z1MlValues = JSON.parse('{{ z1_ml_values|escapejs }}');
+        var z1RhValues = JSON.parse('{{ z1_rh_values|escapejs }}');
+    
+        // ตรวจสอบข้อมูลใน console
+        console.log("Dates: ", dates);
+        console.log("Water pH: ", waterPhValues);
+        console.log("Water EC: ", waterEcValues);
+        console.log("Z1 pH1: ", z1Ph1Values);
+        console.log("Z1 pH2: ", z1Ph2Values);
+        console.log("Z1 EC1: ", z1Ec1Values);
+        console.log("Z1 EC2: ", z1Ec2Values);
+        console.log("Z1 ML: ", z1MlValues);
+        console.log("Z1 RH: ", z1RhValues);
+    
+        var ctx = document.getElementById('myChart').getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: JSON.parse('{{ dates }}'),  // แปลง JSON กลับมาเป็น JavaScript array
+                labels: dates,
                 datasets: [
                     {
-                        label: 'pH',
-                        data: JSON.parse('{{ ph_values }}'),  // แปลง JSON กลับมาเป็น JavaScript array
+                        label: 'Water pH',
+                        data: waterPhValues,
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 2,
                         fill: false
                     },
                     {
-                        label: 'EC',
-                        data: JSON.parse('{{ ec_values }}'),  // แปลง JSON กลับมาเป็น JavaScript array
+                        label: 'Water EC',
+                        data: waterEcValues,
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 2,
                         fill: false
                     },
                     {
-                        label: 'ML',
-                        data: JSON.parse('{{ ml_values }}'),  // แปลง JSON กลับมาเป็น JavaScript array
+                        label: 'Z1 pH1',
+                        data: z1Ph1Values,
                         borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 2,
                         fill: false
                     },
                     {
-                        label: '%RH',
-                        data: JSON.parse('{{ rh_values }}'),  // แปลง JSON กลับมาเป็น JavaScript array
+                        label: 'Z1 pH2',
+                        data: z1Ph2Values,
                         borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    },
+                    {
+                        label: 'Z1 EC1',
+                        data: z1Ec1Values,
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    },
+                    {
+                        label: 'Z1 EC2',
+                        data: z1Ec2Values,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    },
+                    {
+                        label: 'Z1 ML',
+                        data: z1MlValues,
+                        borderColor: 'rgba(201, 203, 207, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    },
+                    {
+                        label: 'Z1 RH',
+                        data: z1RhValues,
+                        borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 2,
                         fill: false
                     }
@@ -60,37 +281,6 @@
             }
         });
     </script>
-
-    <!-- ตาราง -->
-    <h2>Data Table</h2>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>pH</th>
-                <th>EC</th>
-                <th>ML</th>
-                <th>%RH</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for measurement in measurements %}
-            <tr>
-                <td>{{ measurement.date }}</td>
-                <td>{{ measurement.water_ph }}</td>
-                <td>{{ measurement.water_ec }}</td>
-                <td>{{ measurement.z1_ml }}</td>
-                <td>{{ measurement.z1_rh }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <!-- Filter by date form -->
-    <form method="get">
-        <label for="date">Filter by date:</label>
-        <input type="date" id="date" name="date" value="{{ request.GET.date }}">
-        <button type="submit">Filter</button>
-    </form>
+    
 
 {% endblock content %}
