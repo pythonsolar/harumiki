@@ -1,5 +1,605 @@
 {% extends 'strawberry/base.html' %}
 
 {% block content %}
+    <h1><strong>Dashboard</strong></h1>
+    <br>
+    <!-- กราฟ combined Water pH และ Water EC -->
+    <h2><strong>น้ำประปา</strong></h2>
+    <canvas id="waterPhEcChart" width="400" height="200" style="background-color: white;"></canvas>
+    <br>
+    <!-- กราฟ Z1 pH1, Z1 pH2, Z1 EC1, Z1 EC2, Z1 ML, Z1 RH -->
+    <h2><strong>Zone Z1</strong></h2>
+    <canvas id="z1Chart" width="400" height="200" style="background-color: white;"></canvas>
+    <br>
+    <!-- กราฟ Z2 pH1, Z1 pH2, Z1 EC1, Z1 EC2, Z1 ML, Z1 RH -->
+    <h2><strong>Zone Z2</strong></h2>
+    <canvas id="z2Chart" width="400" height="200" style="background-color: white;"></canvas>
+    <br>
+    <!-- กราฟ Z3 pH1, Z1 pH2, Z1 EC1, Z1 EC2, Z1 ML, Z1 RH -->
+    <h2><strong>Zone Z3</strong></h2>
+    <canvas id="z3Chart" width="400" height="200" style="background-color: white;"></canvas>
+    <br>
+    <!-- กราฟ Z4 pH1, Z1 pH2, Z1 EC1, Z1 EC2, Z1 ML, Z1 RH -->
+    <h2><strong>Zone Z4</strong></h2>
+    <canvas id="z4Chart" width="400" height="200" style="background-color: white;"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- กราฟ Water pH และ Water EC -->
+    <script>
+        var ctxWaterPhEc = document.getElementById('waterPhEcChart').getContext('2d');
+        var waterPhEcChart = new Chart(ctxWaterPhEc, {
+            type: 'line',
+            data: {
+                labels: JSON.parse('{{ dates|escapejs }}'),
+                datasets: [
+                    {
+                        label: 'pH',
+                        data: JSON.parse('{{ water_ph_values|escapejs }}'),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'  // ใช้แกน y แรกสำหรับ pH
+                    },
+                    {
+                        label: 'EC',
+                        data: JSON.parse('{{ water_ec_values|escapejs }}'),
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'  // ใช้แกน y ที่สองสำหรับ EC
+                    }
+                ]
+            },
+            options: {
+                spanGaps: true,  // เปิดการตั้งค่า spanGaps
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'pH'
+                        },
+                        beginAtZero: true
+                    },
+                    y2: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'EC'
+                        },
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false  // ปิดการวาดเส้น grid บนแกน y2
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'black'  // เปลี่ยนสีข้อความใน legend
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    
+    <!-- กราฟ Z1 Parameters -->
+    <script>
+        var ctxZ1 = document.getElementById('z1Chart').getContext('2d');
+        var z1Chart = new Chart(ctxZ1, {
+            type: 'line',
+            data: {
+                labels: JSON.parse('{{ dates|escapejs }}'),
+                datasets: [
+                    {
+                        label: 'pH-1',
+                        data: JSON.parse('{{ z1_ph1_values|escapejs }}'),
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'  // ใช้แกน y แรกสำหรับ pH
+                    },
+                    {
+                        label: 'pH-2',
+                        data: JSON.parse('{{ z1_ph2_values|escapejs }}'),
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'EC-1',
+                        data: JSON.parse('{{ z1_ec1_values|escapejs }}'),
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'  // ใช้แกน y ที่สองสำหรับ EC
+                    },
+                    {
+                        label: 'EC-2',
+                        data: JSON.parse('{{ z1_ec2_values|escapejs }}'),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'
+                    },
+                    {
+                        label: 'ml',
+                        data: JSON.parse('{{ z1_ml_values|escapejs }}'),
+                        borderColor: 'rgba(201, 203, 207, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y3'  // ใช้แกน y ที่สามสำหรับ ML
+                    },
+                    {
+                        label: '%RH',
+                        data: JSON.parse('{{ z1_rh_values|escapejs }}'),
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y3'
+                    }
+                ]
+            },
+            options: {
+                spanGaps: true,  // เปิดการตั้งค่า spanGaps
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'pH'
+                        },
+                        beginAtZero: true
+                    },
+                    y2: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'EC'
+                        },
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    },
+                    y3: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'ml and %RH'
+                        },
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- กราฟ Z2 Parameters -->
+    <script>
+        var ctxZ2 = document.getElementById('z2Chart').getContext('2d');
+        var z2Chart = new Chart(ctxZ2, {
+            type: 'line',
+            data: {
+                labels: JSON.parse('{{ dates|escapejs }}'),
+                datasets: [
+                    {
+                        label: 'pH-1',
+                        data: JSON.parse('{{ z2_ph1_values|escapejs }}'),
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'  // ใช้แกน y แรกสำหรับ pH
+                    },
+                    {
+                        label: 'pH-2',
+                        data: JSON.parse('{{ z2_ph2_values|escapejs }}'),
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'EC-1',
+                        data: JSON.parse('{{ z2_ec1_values|escapejs }}'),
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'  // ใช้แกน y ที่สองสำหรับ EC
+                    },
+                    {
+                        label: 'EC-2',
+                        data: JSON.parse('{{ z2_ec2_values|escapejs }}'),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'
+                    },
+                    {
+                        label: 'ml',
+                        data: JSON.parse('{{ z2_ml_values|escapejs }}'),
+                        borderColor: 'rgba(201, 203, 207, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y3'  // ใช้แกน y ที่สามสำหรับ ML
+                    },
+                    {
+                        label: '%RH',
+                        data: JSON.parse('{{ z2_rh_values|escapejs }}'),
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y3'
+                    }
+                ]
+            },
+            options: {
+                spanGaps: true,  // เปิดการตั้งค่า spanGaps
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'pH'
+                        },
+                        beginAtZero: true
+                    },
+                    y2: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'EC'
+                        },
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    },
+                    y3: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'ml and %RH'
+                        },
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- กราฟ Z3 Parameters -->
+    <script>
+        var ctxZ3 = document.getElementById('z3Chart').getContext('2d');
+        var z3Chart = new Chart(ctxZ3, {
+            type: 'line',
+            data: {
+                labels: JSON.parse('{{ dates|escapejs }}'),
+                datasets: [
+                    {
+                        label: 'pH-1',
+                        data: JSON.parse('{{ z3_ph1_values|escapejs }}'),
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'  // ใช้แกน y แรกสำหรับ pH
+                    },
+                    {
+                        label: 'pH-2',
+                        data: JSON.parse('{{ z3_ph2_values|escapejs }}'),
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'EC-1',
+                        data: JSON.parse('{{ z3_ec1_values|escapejs }}'),
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'  // ใช้แกน y ที่สองสำหรับ EC
+                    },
+                    {
+                        label: 'EC-2',
+                        data: JSON.parse('{{ z3_ec2_values|escapejs }}'),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'
+                    },
+                    {
+                        label: 'ml',
+                        data: JSON.parse('{{ z3_ml_values|escapejs }}'),
+                        borderColor: 'rgba(201, 203, 207, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y3'  // ใช้แกน y ที่สามสำหรับ ML
+                    },
+                    {
+                        label: '%RH',
+                        data: JSON.parse('{{ z3_rh_values|escapejs }}'),
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y3'
+                    }
+                ]
+            },
+            options: {
+                spanGaps: true,  // เปิดการตั้งค่า spanGaps
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'pH'
+                        },
+                        beginAtZero: true
+                    },
+                    y2: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'EC'
+                        },
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    },
+                    y3: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'ml and %RH'
+                        },
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- กราฟ Z4 Parameters -->
+    <script>
+        var ctxZ4 = document.getElementById('z4Chart').getContext('2d');
+        var z4Chart = new Chart(ctxZ4, {
+            type: 'line',
+            data: {
+                labels: JSON.parse('{{ dates|escapejs }}'),
+                datasets: [
+                    {
+                        label: 'pH-1',
+                        data: JSON.parse('{{ z4_ph1_values|escapejs }}'),
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'  // ใช้แกน y แรกสำหรับ pH
+                    },
+                    {
+                        label: 'pH-2',
+                        data: JSON.parse('{{ z4_ph2_values|escapejs }}'),
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'EC-1',
+                        data: JSON.parse('{{ z4_ec1_values|escapejs }}'),
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'  // ใช้แกน y ที่สองสำหรับ EC
+                    },
+                    {
+                        label: 'EC-2',
+                        data: JSON.parse('{{ z4_ec2_values|escapejs }}'),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'
+                    },
+                    {
+                        label: 'ml',
+                        data: JSON.parse('{{ z4_ml_values|escapejs }}'),
+                        borderColor: 'rgba(201, 203, 207, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y3'  // ใช้แกน y ที่สามสำหรับ ML
+                    },
+                    {
+                        label: '%RH',
+                        data: JSON.parse('{{ z4_rh_values|escapejs }}'),
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y3'
+                    }
+                ]
+            },
+            options: {
+                spanGaps: true,  // เปิดการตั้งค่า spanGaps
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'pH'
+                        },
+                        beginAtZero: true
+                    },
+                    y2: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'EC'
+                        },
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    },
+                    y3: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'ml and %RH'
+                        },
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <table border="1" style="width:100%; border-collapse: collapse; text-align: center;">
+        <thead>
+            <tr>
+                <th rowspan="3" style="border: 1px solid black;">Date</th>
+                <th colspan="2" style="border: 1px solid black;">น้ำประปา</th>
+                <th colspan="6" style="border: 1px solid black;">Z1</th>
+                <th colspan="6" style="border: 1px solid black;">Z2</th>
+                <th colspan="6" style="border: 1px solid black;">Z3</th>
+                <th colspan="6" style="border: 1px solid black;">Z4</th>
+            </tr>
+            <tr>
+                <th rowspan="2" style="border: 1px solid black;">pH</th>
+                <th rowspan="2" style="border: 1px solid black;">EC</th>
+                <th colspan="2" style="border: 1px solid black;">pH</th>
+                <th colspan="2" style="border: 1px solid black;">EC</th>
+                <th rowspan="2" style="border: 1px solid black;">ml</th>
+                <th rowspan="2" style="border: 1px solid black;">%RH</th>
+                <th colspan="2" style="border: 1px solid black;">pH</th>
+                <th colspan="2" style="border: 1px solid black;">EC</th>
+                <th rowspan="2" style="border: 1px solid black;">ml</th>
+                <th rowspan="2" style="border: 1px solid black;">%RH</th>
+                <th colspan="2" style="border: 1px solid black;">pH</th>
+                <th colspan="2" style="border: 1px solid black;">EC</th>
+                <th rowspan="2" style="border: 1px solid black;">ml</th>
+                <th rowspan="2" style="border: 1px solid black;">%RH</th>
+                <th colspan="2" style="border: 1px solid black;">pH</th>
+                <th colspan="2" style="border: 1px solid black;">EC</th>
+                <th rowspan="2" style="border: 1px solid black;">ml</th>
+                <th rowspan="2" style="border: 1px solid black;">%RH</th>
+            </tr>
+            <tr>
+                <th style="border: 1px solid black;">pH-1</th>
+                <th style="border: 1px solid black;">pH-2</th>
+                <th style="border: 1px solid black;">EC-1</th>
+                <th style="border: 1px solid black;">EC-2</th>
+                <th style="border: 1px solid black;">pH-1</th>
+                <th style="border: 1px solid black;">pH-2</th>
+                <th style="border: 1px solid black;">EC-1</th>
+                <th style="border: 1px solid black;">EC-2</th>
+                <th style="border: 1px solid black;">pH-1</th>
+                <th style="border: 1px solid black;">pH-2</th>
+                <th style="border: 1px solid black;">EC-1</th>
+                <th style="border: 1px solid black;">EC-2</th>
+                <th style="border: 1px solid black;">pH-1</th>
+                <th style="border: 1px solid black;">pH-2</th>
+                <th style="border: 1px solid black;">EC-1</th>
+                <th style="border: 1px solid black;">EC-2</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for measurement in measurements %}
+            <tr>
+                <td style="border: 1px solid black;">{{ measurement.date }}</td>
+                <td style="border: 1px solid black;">{{ measurement.water_ph|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.water_ec|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z1_ph1|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z1_ph2|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z1_ec1|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z1_ec2|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z1_ml|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z1_rh|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z2_ph1|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z2_ph2|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z2_ec1|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z2_ec2|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z2_ml|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z2_rh|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z3_ph1|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z3_ph2|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z3_ec1|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z3_ec2|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z3_ml|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z3_rh|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z4_ph1|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z4_ph2|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z4_ec1|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z4_ec2|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z4_ml|default_if_none:"0" }}</td>
+                <td style="border: 1px solid black;">{{ measurement.z4_rh|default_if_none:"0" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
 {% endblock content %}
