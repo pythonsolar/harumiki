@@ -2,11 +2,10 @@ from django.db import models
 
 # Create your models here.
 class Measurement(models.Model):
-    date = models.DateField(null=True, blank=True)  # วันที่
+    date = models.DateField(null=True, blank=True)
 
-    # ข้อมูลของน้ำ
-    water_ph = models.FloatField(null=True, blank=True, default=0.0)  # ค่าความเป็นกรด-ด่างของน้ำ
-    water_ec = models.FloatField(null=True, blank=True, default=0.0)  # ค่าการนำไฟฟ้าของน้ำ (EC)
+    water_ph = models.FloatField(null=True, blank=True, default=0.0)
+    water_ec = models.FloatField(null=True, blank=True, default=0.0)
 
     # ข้อมูลโซน 1
     z1_ph1 = models.FloatField(null=True, blank=True, default=0.0)
@@ -42,3 +41,39 @@ class Measurement(models.Model):
 
     def __str__(self):
         return f"Measurement on {self.date}"
+
+class MeasurementTwo(models.Model):
+    date = models.DateField(null=True, blank=True)
+
+    # GH1 ข้อมูล EC
+    gh1_ec_be = models.FloatField(null=True, blank=True, default=0.0)
+    gh1_ec_mid = models.FloatField(null=True, blank=True, default=0.0)
+    gh1_ec_end = models.FloatField(null=True, blank=True, default=0.0)
+
+    # GH1 ข้อมูล pH
+    gh1_ph_be = models.FloatField(null=True, blank=True, default=0.0)
+    gh1_ph_mid = models.FloatField(null=True, blank=True, default=0.0)
+    gh1_ph_end = models.FloatField(null=True, blank=True, default=0.0)
+
+    # GH1 ข้อมูล ml
+    gh1_ml_be = models.FloatField(null=True, blank=True, default=0.0)
+    gh1_ml_mid = models.FloatField(null=True, blank=True, default=0.0)
+    gh1_ml_end = models.FloatField(null=True, blank=True, default=0.0)
+
+    # GH2 ข้อมูล EC
+    gh2_ec_be = models.FloatField(null=True, blank=True, default=0.0)
+    gh2_ec_mid = models.FloatField(null=True, blank=True, default=0.0)
+    gh2_ec_end = models.FloatField(null=True, blank=True, default=0.0)
+
+    # GH2 ข้อมูล pH
+    gh2_ph_be = models.FloatField(null=True, blank=True, default=0.0)
+    gh2_ph_mid = models.FloatField(null=True, blank=True, default=0.0)
+    gh2_ph_end = models.FloatField(null=True, blank=True, default=0.0)
+
+    # GH2 ข้อมูล ml
+    gh2_ml_be = models.FloatField(null=True, blank=True, default=0.0)
+    gh2_ml_mid = models.FloatField(null=True, blank=True, default=0.0)
+    gh2_ml_end = models.FloatField(null=True, blank=True, default=0.0)
+
+    def __str__(self):
+        return f"MeasurementTwo on {self.date}"

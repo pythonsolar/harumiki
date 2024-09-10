@@ -1,11 +1,13 @@
 {% extends 'strawberry/base.html' %}
 
 {% block content %}
-    <h1>Data Visualization</h1>
-
+    <br>
+    <br>
+    <h1><strong>Data Visualization</strong></h1>
+    <br>
     <!-- กราฟ -->
     <canvas id="myChart" width="400" height="200" style="background-color: white;"></canvas>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         var ctx = document.getElementById('myChart').getContext('2d');
@@ -16,7 +18,7 @@
             labels: JSON.parse('{{ dates|escapejs }}'),  // แกนเวลา (วันที่)
             datasets: [
                 {
-                    label: 'Water pH',
+                    label: 'น้ำประปา pH',
                     data: JSON.parse('{{ water_ph_values|escapejs }}'),
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 2,
@@ -24,7 +26,7 @@
                     yAxisID: 'y1'  // ใช้แกน y แกนแรก
                 },
                 {
-                    label: 'Water EC',
+                    label: 'น้ำประปา EC',
                     data: JSON.parse('{{ water_ec_values|escapejs }}'),
                     borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 2,
@@ -32,7 +34,7 @@
                     yAxisID: 'y2'  // ใช้แกน y แกนที่สอง
                 },
                 {
-                    label: 'Z1 pH1',
+                    label: 'Z1-pH1',
                     data: JSON.parse('{{ z1_ph1_values|escapejs }}'),
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 2,
@@ -40,7 +42,7 @@
                     yAxisID: 'y1'  // ใช้แกน y แกนแรก
                 },
                 {
-                    label: 'Z1 pH2',
+                    label: 'Z1-pH2',
                     data: JSON.parse('{{ z1_ph2_values|escapejs }}'),
                     borderColor: 'rgba(153, 102, 255, 1)',
                     borderWidth: 2,
@@ -48,7 +50,7 @@
                     yAxisID: 'y1'  // ใช้แกน y แกนแรก
                 },
                 {
-                    label: 'Z1 EC1',
+                    label: 'Z1-EC1',
                     data: JSON.parse('{{ z1_ec1_values|escapejs }}'),
                     borderColor: 'rgba(255, 159, 64, 1)',
                     borderWidth: 2,
@@ -56,7 +58,7 @@
                     yAxisID: 'y2'  // ใช้แกน y แกนที่สอง
                 },
                 {
-                    label: 'Z1 EC2',
+                    label: 'Z1-EC2',
                     data: JSON.parse('{{ z1_ec2_values|escapejs }}'),
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 2,
@@ -64,7 +66,7 @@
                     yAxisID: 'y2'  // ใช้แกน y แกนที่สอง
                 },
                 {
-                    label: 'Z1 ML',
+                    label: 'Z1-ml',
                     data: JSON.parse('{{ z1_ml_values|escapejs }}'),
                     borderColor: 'rgba(201, 203, 207, 1)',
                     borderWidth: 2,
@@ -72,7 +74,7 @@
                     yAxisID: 'y3'  // ใช้แกน y แกนที่สาม
                 },
                 {
-                    label: 'Z1 RH',
+                    label: 'Z1-%RH',
                     data: JSON.parse('{{ z1_rh_values|escapejs }}'),
                     borderColor: 'rgba(255, 206, 86, 1)',
                     borderWidth: 2,
@@ -117,7 +119,7 @@
                     position: 'right',
                     title: {
                         display: true,
-                        text: 'ML and RH'
+                        text: 'ml and %RH'
                     },
                     beginAtZero: true,
                     grid: {
@@ -137,10 +139,11 @@
     });
 
     </script>
-
-
+    <br>
+    <br>
     <!-- ตาราง -->
-    <h2>Data Table</h2>
+    <h2><strong>Data Table</strong></h2>
+    <br>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -173,11 +176,11 @@
     </table>
 
     <!-- Filter by date form -->
-    <form method="get">
+    <!-- <form method="get">
         <label for="date">Filter by date:</label>
         <input type="date" id="date" name="date" value="{{ request.GET.date }}">
         <button type="submit">Filter</button>
-    </form>
+    </form> -->
 
     <script>
         var dates = JSON.parse('{{ dates|escapejs }}');

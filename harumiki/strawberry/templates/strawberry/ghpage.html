@@ -1,0 +1,286 @@
+{% extends 'strawberry/base.html' %}
+
+{% block content %}
+
+    <!-- ฟอร์มสำหรับเลือกวันที่ -->
+    <!-- <form method="GET">
+        <label for="start-date">Start Date:</label>
+        <input type="date" id="start-date" name="start-date" value="{{ request.GET.start_date }}">
+        <label for="end-date">End Date:</label>
+        <input type="date" id="end-date" name="end-date" value="{{ request.GET.end_date }}">
+        <button type="submit">Filter</button>
+    </form>
+    <br> -->
+
+    <h1><strong>GH1 Data Visualization</strong></h1>
+    <br>
+    <!-- กราฟ GH1 pH, EC, ml -->
+    <canvas id="gh1Chart" width="400" height="200" style="background-color: white;"></canvas>
+    <br>
+    <br>
+    <h1><strong>GH2 Data Visualization</strong></h1>
+    <br>
+    <!-- กราฟ GH2 pH, EC, ml -->
+    <canvas id="gh2Chart" width="400" height="200" style="background-color: white;"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        var ctx = document.getElementById('gh1Chart').getContext('2d');
+
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: JSON.parse('{{ dates|escapejs }}'),
+                datasets: [
+                    {
+                        label: 'pH-ต้น',
+                        data: JSON.parse('{{ gh1_ph_be_values|escapejs }}'),
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'pH-กลาง',
+                        data: JSON.parse('{{ gh1_ph_mid_values|escapejs }}'),
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'pH-ปลาย',
+                        data: JSON.parse('{{ gh1_ph_end_values|escapejs }}'),
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'EC-ต้น',
+                        data: JSON.parse('{{ gh1_ec_be_values|escapejs }}'),
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'
+                    },
+                    {
+                        label: 'EC-กลาง',
+                        data: JSON.parse('{{ gh1_ec_mid_values|escapejs }}'),
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'
+                    },
+                    {
+                        label: 'EC-ปลาย',
+                        data: JSON.parse('{{ gh1_ec_end_values|escapejs }}'),
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'
+                    },
+                    {
+                        label: 'ml-ต้น',
+                        data: JSON.parse('{{ gh1_ml_be_values|escapejs }}'),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y3'
+                    },
+                    {
+                        label: 'ml-กลาง',
+                        data: JSON.parse('{{ gh1_ml_mid_values|escapejs }}'),
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y3'
+                    },
+                    {
+                        label: 'ml-ปลาย',
+                        data: JSON.parse('{{ gh1_ml_end_values|escapejs }}'),
+                        borderColor: 'rgba(201, 203, 207, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y3'
+                    }
+                ]
+            },
+            options: {
+                spanGaps: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'pH'
+                        },
+                        beginAtZero: true
+                    },
+                    y2: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'EC'
+                        },
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    },
+                    y3: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'ml'
+                        },
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script>
+        var ctx = document.getElementById('gh2Chart').getContext('2d');
+
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: JSON.parse('{{ dates|escapejs }}'),
+                datasets: [
+                    {
+                        label: 'pH-ต้น',
+                        data: JSON.parse('{{ gh2_ph_be_values|escapejs }}'),
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'pH-กลาง',
+                        data: JSON.parse('{{ gh2_ph_mid_values|escapejs }}'),
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'pH-ปลาย',
+                        data: JSON.parse('{{ gh2_ph_end_values|escapejs }}'),
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'EC-ต้น',
+                        data: JSON.parse('{{ gh2_ec_be_values|escapejs }}'),
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'
+                    },
+                    {
+                        label: 'EC-กลาง',
+                        data: JSON.parse('{{ gh2_ec_mid_values|escapejs }}'),
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'
+                    },
+                    {
+                        label: 'EC-ปลาย',
+                        data: JSON.parse('{{ gh2_ec_end_values|escapejs }}'),
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y2'
+                    },
+                    {
+                        label: 'ml-ต้น',
+                        data: JSON.parse('{{ gh2_ml_be_values|escapejs }}'),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y3'
+                    },
+                    {
+                        label: 'ml-กลาง',
+                        data: JSON.parse('{{ gh2_ml_mid_values|escapejs }}'),
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y3'
+                    },
+                    {
+                        label: 'ml-ปลาย',
+                        data: JSON.parse('{{ gh2_ml_end_values|escapejs }}'),
+                        borderColor: 'rgba(201, 203, 207, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'y3'
+                    }
+                ]
+            },
+            options: {
+                spanGaps: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'pH'
+                        },
+                        beginAtZero: true
+                    },
+                    y2: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'EC'
+                        },
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    },
+                    y3: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'ml'
+                        },
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+{% endblock content %}

@@ -3,22 +3,36 @@
 {% block content %}
     <h1><strong>Dashboard</strong></h1>
     <br>
+    <!-- ฟอร์มสำหรับเลือกวันที่ -->
+    <form method="GET">
+        <label for="start-date">Start Date:</label>
+        <input type="date" id="start-date" name="start-date" value="{{ request.GET.start_date }}">
+        <label for="end-date">End Date:</label>
+        <input type="date" id="end-date" name="end-date" value="{{ request.GET.end_date }}">
+        <button type="submit">Filter</button>
+    </form>
+    <br>
+    
     <!-- กราฟ combined Water pH และ Water EC -->
     <h2><strong>น้ำประปา</strong></h2>
     <canvas id="waterPhEcChart" width="400" height="200" style="background-color: white;"></canvas>
     <br>
+    
     <!-- กราฟ Z1 pH1, Z1 pH2, Z1 EC1, Z1 EC2, Z1 ML, Z1 RH -->
     <h2><strong>Zone Z1</strong></h2>
     <canvas id="z1Chart" width="400" height="200" style="background-color: white;"></canvas>
     <br>
+    
     <!-- กราฟ Z2 pH1, Z1 pH2, Z1 EC1, Z1 EC2, Z1 ML, Z1 RH -->
     <h2><strong>Zone Z2</strong></h2>
     <canvas id="z2Chart" width="400" height="200" style="background-color: white;"></canvas>
     <br>
+    
     <!-- กราฟ Z3 pH1, Z1 pH2, Z1 EC1, Z1 EC2, Z1 ML, Z1 RH -->
     <h2><strong>Zone Z3</strong></h2>
     <canvas id="z3Chart" width="400" height="200" style="background-color: white;"></canvas>
     <br>
+    
     <!-- กราฟ Z4 pH1, Z1 pH2, Z1 EC1, Z1 EC2, Z1 ML, Z1 RH -->
     <h2><strong>Zone Z4</strong></h2>
     <canvas id="z4Chart" width="400" height="200" style="background-color: white;"></canvas>
@@ -517,7 +531,10 @@
             }
         });
     </script>
-
+    <br>
+    <br>
+    <h2><strong>Data Table</strong></h2>
+    <br>
     <table border="1" style="width:100%; border-collapse: collapse; text-align: center;">
         <thead>
             <tr>

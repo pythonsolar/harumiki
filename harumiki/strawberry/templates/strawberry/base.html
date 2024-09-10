@@ -99,10 +99,10 @@
       }
 
       /* เปลี่ยนพื้นหลังเป็นสีขาว */
-      /* body {
+      body {
         background-color: white;
         color: black;
-      } */
+      }
 
     </style>
   </head>
@@ -111,7 +111,7 @@
   <body class="d-flex text-center bg-white text-dark">
 
     <!-- Theme Toggle -->
-    <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
+    <!-- <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
       <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
         <svg class="bi my-1 theme-icon-active" width="1em" height="1em"><use href="#circle-half"></use></svg>
         <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
@@ -139,7 +139,7 @@
           </button>
         </li>
       </ul>
-    </div>
+    </div> -->
 
     <!-- Main Container -->
     <div class="container d-flex w-100 h-100 p-3 mx-auto flex-column">
@@ -149,6 +149,7 @@
           <nav class="nav nav-masthead justify-content-center float-md-end">
             <a class="nav-link fw-bold py-1 px-0" href="{% url 'home' %}">หน้าแรก</a>
             <a class="nav-link fw-bold py-1 px-0" href="{% url 'dashboard' %}">Dashboard</a>
+            <a class="nav-link fw-bold py-1 px-0" href="{% url 'ghpage' %}">GH1-2</a>
           </nav>
         </div>
       </header>

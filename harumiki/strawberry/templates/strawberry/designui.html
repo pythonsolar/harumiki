@@ -1,0 +1,185 @@
+{% extends 'strawberry/base.html' %}
+
+{% block content %}
+<br>
+<br>
+<div class="container">
+    <div class="row">
+        <!-- Gauge Charts -->
+        <div class="col-md-6 d-flex flex-column justify-content-center align-items-center">
+            <h3><strong>น้ำประปา pH</strong></h3>
+            <canvas id="waterPhGauge" width="300" height="300"></canvas>
+        </div>
+        <div class="col-md-6 d-flex flex-column justify-content-center align-items-center">
+            <h3><strong>น้ำประปา EC</strong></h3>
+            <canvas id="waterEcGauge" width="300" height="300"></canvas>
+        </div>
+    </div>
+    <br>
+    <br>
+    <!-- ฟอร์มสำหรับเลือกวันที่ -->
+    <form method="GET">
+        <label for="start-date">Start Date:</label>
+        <input type="date" id="start-date" name="start-date" value="{{ request.GET.start_date }}">
+        <label for="end-date">End Date:</label>
+        <input type="date" id="end-date" name="end-date" value="{{ request.GET.end_date }}">
+        <button type="submit">Filter</button>
+    </form>
+    <div class="row mt-5">
+        <!-- Line Chart -->
+        <div class="col-md-12">
+            <h3><strong>น้ำประปา pH และ EC</strong></h3>
+            <canvas id="waterPhEcChart" width="600" height="300"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Gauge.js -->
+<script src="https://cdn.jsdelivr.net/npm/gaugeJS/dist/gauge.min.js"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // แปลงค่า water_ph และ water_ec จาก Django
+    var waterPhValue = parseFloat("{{ water_ph|escapejs }}");  // แปลงค่า pH จาก Django เป็นตัวเลข
+    var waterEcValue = parseFloat("{{ water_ec|escapejs }}");  // แปลงค่า EC จาก Django เป็นตัวเลข
+
+    // ตรวจสอบค่าที่แปลงได้ในคอนโซล (สำหรับ Debugging)
+    console.log("Water pH:", waterPhValue);
+    console.log("Water EC:", waterEcValue);
+
+    // Water pH Gauge
+    var optsPh = {
+        angle: -0.25, // The span of the gauge
+        lineWidth: 0.2, // The line thickness
+        radiusScale: 1.0, // Relative radius
+        pointer: {
+            length: 0.6, // Relative to gauge radius
+            strokeWidth: 0.04, // Thickness
+            color: '#000000' // Color
+        },
+        limitMax: false,     // If false, the max value of the gauge will be updated if value surpasses max
+        limitMin: false,     // If true, the min value of the gauge will be fixed
+        colorStart: '#6FADCF',   // Colors
+        colorStop: '#8FC0DA',    // just experiment with them
+        strokeColor: '#E0E0E0',  // to see which ones work best for you
+        generateGradient: true,
+        highDpiSupport: true,     // High resolution support
+        staticLabels: {
+            font: "15px sans-serif",  // Specifies font
+            labels: [0, 5, 10, 15],  // Print labels at these values
+            color: "#000000",  // Optional: Label text color
+            fractionDigits: 0  // Optional: Numerical precision. 0=round off.
+        }
+    };
+
+    var targetPh = document.getElementById('waterPhGauge'); // your canvas element
+    var gaugePh = new Gauge(targetPh).setOptions(optsPh); // create gauge!
+    gaugePh.maxValue = 15; // set max gauge value
+    gaugePh.setMinValue(0);  // Prefer setter over gauge.minValue = 0
+    gaugePh.animationSpeed = 32; // set animation speed (32 is default value)
+    gaugePh.set(waterPhValue); // set the latest water pH value
+
+    // Water EC Gauge
+    var optsEc = {
+        angle: -0.25,
+        lineWidth: 0.2,
+        radiusScale: 1,
+        pointer: {
+            length: 0.6,
+            strokeWidth: 0.04,
+            color: '#000000'
+        },
+        limitMax: false,
+        limitMin: false,
+        colorStart: '#FF6347',  
+        colorStop: '#FF4500',
+        strokeColor: '#E0E0E0',
+        generateGradient: true,
+        highDpiSupport: true,
+        staticLabels: {
+            font: "15px sans-serif",
+            labels: [0, 0.2, 0.4, 0.6],
+            color: "#000000",
+            fractionDigits: 1
+        }
+    };
+
+    var targetEc = document.getElementById('waterEcGauge');
+    var gaugeEc = new Gauge(targetEc).setOptions(optsEc);
+    gaugeEc.maxValue = 0.6;
+    gaugeEc.setMinValue(0);
+    gaugeEc.animationSpeed = 32;
+    gaugeEc.set(waterEcValue); // set the latest water EC value
+
+    // Line Chart (Water pH and EC Over Time)
+    var ctxWaterPhEc = document.getElementById('waterPhEcChart').getContext('2d');
+    var waterPhEcChart = new Chart(ctxWaterPhEc, {
+        type: 'line',
+        data: {
+            labels: JSON.parse('{{ dates|escapejs }}'),
+            datasets: [
+                {
+                    label: 'pH',
+                    data: JSON.parse('{{ water_ph_values|escapejs }}'),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                    yAxisID: 'y1'  // ใช้แกน y แรกสำหรับ pH
+                },
+                {
+                    label: 'EC',
+                    data: JSON.parse('{{ water_ec_values|escapejs }}'),
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                    yAxisID: 'y2'  // ใช้แกน y ที่สองสำหรับ EC
+                }
+            ]
+        },
+        options: {
+            spanGaps: true,  // เปิดการตั้งค่า spanGaps
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'pH'
+                    },
+                    beginAtZero: true
+                },
+                y2: {
+                    type: 'linear',
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'EC'
+                    },
+                    beginAtZero: true,
+                    grid: {
+                        drawOnChartArea: false  // ปิดการวาดเส้น grid บนแกน y2
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'black'  // เปลี่ยนสีข้อความใน legend
+                    }
+                }
+            }
+        }
+    });
+
+</script>
+
+{% endblock content %}
