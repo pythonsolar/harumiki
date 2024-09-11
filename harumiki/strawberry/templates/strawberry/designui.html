@@ -19,12 +19,13 @@
     <br>
     <!-- ฟอร์มสำหรับเลือกวันที่ -->
     <form method="GET">
-        <label for="start-date">Start Date:</label>
+        <label for="start-date"><strong>Start Date:</strong></label>
         <input type="date" id="start-date" name="start-date" value="{{ request.GET.start_date }}">
-        <label for="end-date">End Date:</label>
+        <label for="end-date"><strong>End Date:</strong></label>
         <input type="date" id="end-date" name="end-date" value="{{ request.GET.end_date }}">
-        <button type="submit">Filter</button>
+        <button type="submit"><strong>Filter</strong></button>
     </form>
+    
     <div class="row mt-5">
         <!-- Line Chart -->
         <div class="col-md-12">
@@ -49,7 +50,7 @@
     console.log("Water pH:", waterPhValue);
     console.log("Water EC:", waterEcValue);
 
-    // Water pH Gauge
+    // Water pH Gauge======================================================================================
     var optsPh = {
         angle: -0.25, // The span of the gauge
         lineWidth: 0.2, // The line thickness
@@ -81,7 +82,7 @@
     gaugePh.animationSpeed = 32; // set animation speed (32 is default value)
     gaugePh.set(waterPhValue); // set the latest water pH value
 
-    // Water EC Gauge
+    // Water EC Gauge======================================================================================
     var optsEc = {
         angle: -0.25,
         lineWidth: 0.2,
@@ -113,7 +114,7 @@
     gaugeEc.animationSpeed = 32;
     gaugeEc.set(waterEcValue); // set the latest water EC value
 
-    // Line Chart (Water pH and EC Over Time)
+    // Line Chart (Water pH and EC Over Time)===============================================================
     var ctxWaterPhEc = document.getElementById('waterPhEcChart').getContext('2d');
     var waterPhEcChart = new Chart(ctxWaterPhEc, {
         type: 'line',
