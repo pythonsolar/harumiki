@@ -1,34 +1,83 @@
 {% extends 'strawberry/base.html' %}
 
 {% block content %}
+<style>
+    .styled-heading {
+        font-size: 2rem;         /* ขนาดของฟอนต์ */
+        color: rgb(92, 15, 15);          /* สีข้อความ */
+        text-align: center;      /* จัดกึ่งกลางข้อความ */
+        font-family: 'Arial', sans-serif;  /* เลือกฟอนต์ */
+        font-weight: bold;       /* ความหนาของฟอนต์ */
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);  /* เงาข้อความ */
+        padding: 10px;           /* เพิ่ม padding */
+        background: linear-gradient(to right, #6dd5fa, #2980b9);  /* พื้นหลังแบบ gradient */
+        border-radius: 10px;     /* มุมโค้งมน */
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);  /* เงาใต้กล่อง */
+        display: inline-block;   /* ทำให้หัวข้ออยู่ตรงกลางในกรอบ */
+    }
+</style>
 <br>
 <br>
 <div class="container">
+    <h1 class="styled-heading"><strong>ค่า EC</strong></h1>
+    <br>
+    <br>
     <div class="row">
-        <!-- Gauge Charts -->
         <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
-            <h3><strong>gh1_ec_be</strong></h3>
+            <h3><strong>ต้น</strong></h3>
             <canvas id="gh1ECbeGauge" width="300" height="300"></canvas>
         </div>
         <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
-            <h3><strong>gh1_ec_mid</strong></h3>
+            <h3><strong>กลาง</strong></h3>
             <canvas id="gh1ECmidGauge" width="300" height="300"></canvas>
         </div>
         <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
-            <h3><strong>gh1_ec_end</strong></h3>
+            <h3><strong>ท้าย</strong></h3>
             <canvas id="gh1ECendGauge" width="300" height="300"></canvas>
         </div>
     </div>
     <br>
     <br>
 
+    <h1 class="styled-heading"><strong>ค่า pH</strong></h1>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+            <h3><strong>ต้น</strong></h3>
+            <canvas id="gh1PHbeGauge" width="300" height="300"></canvas>
+        </div>
+        <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+            <h3><strong>กลาง</strong></h3>
+            <canvas id="gh1PHmidGauge" width="300" height="300"></canvas>
+        </div>
+        <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+            <h3><strong>ท้าย</strong></h3>
+            <canvas id="gh1PHendGauge" width="300" height="300"></canvas>
+        </div>
+    </div>
+    <br>
+    <br>
+
+    <h1 class="styled-heading"><strong>ค่า ml</strong></h1>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+            <h3><strong>ต้น</strong></h3>
+            <canvas id="gh1MLbeGauge" width="300" height="300"></canvas>
+        </div>
+        <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+            <h3><strong>กลาง</strong></h3>
+            <canvas id="gh1MLmidGauge" width="300" height="300"></canvas>
+        </div>
+        <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+            <h3><strong>ท้าย</strong></h3>
+            <canvas id="gh1MLendGauge" width="300" height="300"></canvas>
+        </div>
+    </div>
+  
 </div>
-
-<!-- Gauge.js -->
-<script src="https://cdn.jsdelivr.net/npm/gaugeJS/dist/gauge.min.js"></script>
-
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
     // แปลงค่า water_ph และ water_ec จาก Django
@@ -36,19 +85,35 @@
     var gh1ECmid = parseFloat("{{ gh1_ec_mid|escapejs }}");  // แปลงค่า EC จาก Django เป็นตัวเลข
     var gh1ECend = parseFloat("{{ gh1_ec_end|escapejs }}");  // แปลงค่า EC จาก Django เป็นตัวเลข
 
+    var gh1PHbe = parseFloat("{{ gh1_ph_be|escapejs }}");  // แปลงค่า pH be จาก Django เป็นตัวเลข
+    var gh1PHmid = parseFloat("{{ gh1_ph_mid|escapejs }}");  // แปลงค่า pH mid จาก Django เป็นตัวเลข
+    var gh1PHend = parseFloat("{{ gh1_ph_end|escapejs }}");  // แปลงค่า pH end จาก Django เป็นตัวเลข
+
+    var gh1MLbe = parseFloat("{{ gh1_ml_be|escapejs }}");  // แปลงค่า ML be จาก Django เป็นตัวเลข
+    var gh1MLmid = parseFloat("{{ gh1_ml_mid|escapejs }}");  // แปลงค่า ML mid จาก Django เป็นตัวเลข
+    var gh1MLend = parseFloat("{{ gh1_ml_end|escapejs }}");  // แปลงค่า ML end จาก Django เป็นตัวเลข
+
     // ตรวจสอบค่าที่แปลงได้ในคอนโซล (สำหรับ Debugging)
     console.log("gh1_ec_be:", gh1ECbe);
     console.log("gh1_ec_mid:", gh1ECmid);
     console.log("gh1_ec_end:", gh1ECend);
 
-    // Water pH Gauge======================================================================================
-    var optsPh = {
+    console.log("gh1_ph_be:", gh1PHbe);
+    console.log("gh1_ph_mid:", gh1PHmid);
+    console.log("gh1_ph_end:", gh1PHend);
+
+    console.log("gh1_ml_be:", gh1MLbe);
+    console.log("gh1_ml_mid:", gh1MLmid);
+    console.log("gh1_ml_end:", gh1MLend);
+
+    // Water gh1ECbe  Gauge //
+    var optsECbe = {
         angle: -0.25, // The span of the gauge
         lineWidth: 0.2, // The line thickness
-        radiusScale: 1.0, // Relative radius
+        radiusScale: 0.9, // Relative radius
         pointer: {
             length: 0.6, // Relative to gauge radius
-            strokeWidth: 0.04, // Thickness
+            strokeWidth: 0.05, // Thickness
             color: '#000000' // Color
         },
         limitMax: false,     // If false, the max value of the gauge will be updated if value surpasses max
@@ -60,31 +125,95 @@
         highDpiSupport: true,     // High resolution support
         staticLabels: {
             font: "15px sans-serif",  // Specifies font
-            labels: [0, 0.2, 0.4],  // Print labels at these values
+            labels: [0, 0.25, 0.5, 0.75, 1],  // Print labels at these values
             color: "#000000",  // Optional: Label text color
-            fractionDigits: 1  // Optional: Numerical precision. 0=round off.
+            fractionDigits: 2  // Optional: Numerical precision. 0=round off.
         }
     };
 
-    var targetPh = document.getElementById('gh1ECbeGauge'); // your canvas element
-    var gaugePh = new Gauge(targetPh).setOptions(optsPh); // create gauge!
-    gaugePh.maxValue = 0.6; // set max gauge value
-    gaugePh.setMinValue(0);  // Prefer setter over gauge.minValue = 0
-    gaugePh.animationSpeed = 32; // set animation speed (32 is default value)
-    gaugePh.set(gh1ECbe); // set the latest water pH value
+    var targetECbe = document.getElementById('gh1ECbeGauge'); // your canvas element
+    var gaugeECbe = new Gauge(targetECbe).setOptions(optsECbe); // create gauge!
+    gaugeECbe.maxValue = 1; // set max gauge value
+    gaugeECbe.setMinValue(0);  // Prefer setter over gauge.minValue = 0
+    gaugeECbe.animationSpeed = 32; // set animation speed (32 is default value)
+    gaugeECbe.set(gh1ECbe); // set the latest water pH value
 
-    // Water EC Gauge======================================================================================
-    var optsEc = {
+    // Water gh1ECmid Gauge //
+    var optsECmid = {
         angle: -0.25,
         lineWidth: 0.2,
-        radiusScale: 1,
+        radiusScale: 0.9,
         pointer: {
             length: 0.6,
-            strokeWidth: 0.04,
+            strokeWidth: 0.05,
             color: '#000000'
         },
         limitMax: false,
         limitMin: false,
+        colorStart: '#6FADCF',
+        colorStop: '#8FC0DA',
+        strokeColor: '#E0E0E0',
+        generateGradient: true,
+        highDpiSupport: true,
+        staticLabels: {
+            font: "15px sans-serif",
+            labels: [0, 0.25, 0.5, 0.75, 1],
+            color: "#000000",
+            fractionDigits: 2
+        }
+    };
+
+    var targetECmid = document.getElementById('gh1ECmidGauge');
+    var gaugeECmid = new Gauge(targetECmid).setOptions(optsECmid);
+    gaugeECmid.maxValue = 1;
+    gaugeECmid.setMinValue(0);
+    gaugeECmid.animationSpeed = 32;
+    gaugeECmid.set(gh1ECmid);
+
+    // Water gh1ECend Gauge //
+    var optsECend = {
+        angle: -0.25,
+        lineWidth: 0.2,
+        radiusScale: 0.9,
+        pointer: {
+            length: 0.6,
+            strokeWidth: 0.05,
+            color: '#000000'
+        },
+        limitMax: false,
+        limitMin: false,
+        colorStart: '#6FADCF',
+        colorStop: '#8FC0DA',
+        strokeColor: '#E0E0E0',
+        generateGradient: true,
+        highDpiSupport: true,
+        staticLabels: {
+            font: "15px sans-serif",
+            labels: [0, 0.25, 0.5, 0.75, 1],
+            color: "#000000",
+            fractionDigits: 2
+        }
+    };
+
+    var targetECend = document.getElementById('gh1ECendGauge');
+    var gaugeECend = new Gauge(targetECend).setOptions(optsECend);
+    gaugeECend.maxValue = 1;
+    gaugeECend.setMinValue(0);
+    gaugeECend.animationSpeed = 32;
+    gaugeECend.set(gh1ECend);
+
+    // Water gh1PHbe Gauge //
+    var optsPHbe = {
+        angle: -0.25,
+        lineWidth: 0.2,
+        radiusScale: 0.9,
+        pointer: {
+            length: 0.6,
+            strokeWidth: 0.05,
+            color: '#000000'
+        },
+        limitMax: true,
+        limitMin: true,
         colorStart: '#FF6347',  
         colorStop: '#FF4500',
         strokeColor: '#E0E0E0',
@@ -92,31 +221,31 @@
         highDpiSupport: true,
         staticLabels: {
             font: "15px sans-serif",
-            labels: [0, 0.2, 0.4, 0.6],
+            labels: [0, 2.5, 5, 7.5, 10],
             color: "#000000",
             fractionDigits: 1
         }
     };
 
-    var targetEc = document.getElementById('gh1ECmidGauge');
-    var gaugeEc = new Gauge(targetEc).setOptions(optsEc);
-    gaugeEc.maxValue = 0.6;
-    gaugeEc.setMinValue(0);
-    gaugeEc.animationSpeed = 32;
-    gaugeEc.set(gh1ECmid); // set the latest water EC value
+    var targetPHbe = document.getElementById('gh1PHbeGauge');
+    var gaugePHbe = new Gauge(targetPHbe).setOptions(optsPHbe);
+    gaugePHbe.maxValue = 9;
+    gaugePHbe.setMinValue(0);
+    gaugePHbe.animationSpeed = 32;
+    gaugePHbe.set(gh1PHbe);
 
-    // Water EC Gauge======================================================================================
-    var optsEc = {
+    // Water gh1PHmid Gauge //
+    var optsPHmid = {
         angle: -0.25,
         lineWidth: 0.2,
-        radiusScale: 1,
+        radiusScale: 0.9,
         pointer: {
             length: 0.6,
-            strokeWidth: 0.04,
+            strokeWidth: 0.05,
             color: '#000000'
         },
-        limitMax: false,
-        limitMin: false,
+        limitMax: true,
+        limitMin: true,
         colorStart: '#FF6347',  
         colorStop: '#FF4500',
         strokeColor: '#E0E0E0',
@@ -124,85 +253,146 @@
         highDpiSupport: true,
         staticLabels: {
             font: "15px sans-serif",
-            labels: [0, 0.2, 0.4, 0.6],
+            labels: [0, 2.5, 5, 7.5, 10],
             color: "#000000",
             fractionDigits: 1
         }
     };
 
-    var targetEc = document.getElementById('gh1ECendGauge');
-    var gaugeEc = new Gauge(targetEc).setOptions(optsEc);
-    gaugeEc.maxValue = 0.6;
-    gaugeEc.setMinValue(0);
-    gaugeEc.animationSpeed = 32;
-    gaugeEc.set(gh1ECend); // set the latest water EC value
+    var targetPHmid = document.getElementById('gh1PHmidGauge');
+    var gaugePHmid = new Gauge(targetPHmid).setOptions(optsPHmid);
+    gaugePHmid.maxValue = 10;
+    gaugePHmid.setMinValue(0);
+    gaugePHmid.animationSpeed = 32;
+    gaugePHmid.set(gh1PHmid);
 
-    // Line Chart (Water pH and EC Over Time)===============================================================
-    var ctxWaterPhEc = document.getElementById('waterPhEcChart').getContext('2d');
-    var waterPhEcChart = new Chart(ctxWaterPhEc, {
-        type: 'line',
-        data: {
-            labels: JSON.parse('{{ dates|escapejs }}'),
-            datasets: [
-                {
-                    label: 'pH',
-                    data: JSON.parse('{{ water_ph_values|escapejs }}'),
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 2,
-                    fill: false,
-                    yAxisID: 'y1'  // ใช้แกน y แรกสำหรับ pH
-                },
-                {
-                    label: 'EC',
-                    data: JSON.parse('{{ water_ec_values|escapejs }}'),
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 2,
-                    fill: false,
-                    yAxisID: 'y2'  // ใช้แกน y ที่สองสำหรับ EC
-                }
-            ]
+    // Water gh1PHend Gauge //
+    var optsPHend = {
+        angle: -0.25,
+        lineWidth: 0.2,
+        radiusScale: 0.9,
+        pointer: {
+            length: 0.6,
+            strokeWidth: 0.05,
+            color: '#000000'
         },
-        options: {
-            spanGaps: true,  // เปิดการตั้งค่า spanGaps
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Date'
-                    }
-                },
-                y1: {
-                    type: 'linear',
-                    position: 'left',
-                    title: {
-                        display: true,
-                        text: 'pH'
-                    },
-                    beginAtZero: true
-                },
-                y2: {
-                    type: 'linear',
-                    position: 'right',
-                    title: {
-                        display: true,
-                        text: 'EC'
-                    },
-                    beginAtZero: true,
-                    grid: {
-                        drawOnChartArea: false  // ปิดการวาดเส้น grid บนแกน y2
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        color: 'black'  // เปลี่ยนสีข้อความใน legend
-                    }
-                }
-            }
+        limitMax: true,
+        limitMin: true,
+        colorStart: '#FF6347',  
+        colorStop: '#FF4500',
+        strokeColor: '#E0E0E0',
+        generateGradient: true,
+        highDpiSupport: true,
+        staticLabels: {
+            font: "15px sans-serif",
+            labels: [0, 2.5, 5, 7.5, 10],
+            color: "#000000",
+            fractionDigits: 1
         }
-    });
+    };
+
+    var targetPHend = document.getElementById('gh1PHendGauge');
+    var gaugePHend = new Gauge(targetPHend).setOptions(optsPHend);
+    gaugePHend.maxValue = 10;
+    gaugePHend.setMinValue(0);
+    gaugePHend.animationSpeed = 32;
+    gaugePHend.set(gh1PHend);
+
+    // Water gh1MLbe Gauge //
+    var optsMLbe = {
+        angle: -0.25,
+        lineWidth: 0.2,
+        radiusScale: 0.9,
+        pointer: {
+            length: 0.6,
+            strokeWidth: 0.05,
+            color: '#000000'
+        },
+        limitMax: true,
+        limitMin: true,
+        colorStart: 'orange',  
+        colorStop: 'orange',
+        strokeColor: '#E0E0E0',
+        generateGradient: true,
+        highDpiSupport: true,
+        staticLabels: {
+            font: "15px sans-serif",
+            labels: [0, 25, 50, 75, 100],
+            color: "#000000",
+            fractionDigits: 1
+        }
+    };
+
+    var targetMLbe = document.getElementById('gh1MLbeGauge');
+    var gaugeMLbe = new Gauge(targetMLbe).setOptions(optsMLbe);
+    gaugeMLbe.maxValue = 100;
+    gaugeMLbe.setMinValue(0);
+    gaugeMLbe.animationSpeed = 32;
+    gaugeMLbe.set(gh1MLbe);
+
+    // Water gh1MLmid Gauge //
+    var optsMLmid = {
+        angle: -0.25,
+        lineWidth: 0.2,
+        radiusScale: 0.9,
+        pointer: {
+            length: 0.6,
+            strokeWidth: 0.05,
+            color: '#000000'
+        },
+        limitMax: false,
+        limitMin: false,
+        colorStart: 'orange',  
+        colorStop: 'orange',
+        strokeColor: '#E0E0E0',
+        generateGradient: true,
+        highDpiSupport: true,
+        staticLabels: {
+            font: "15px sans-serif",
+            labels: [0, 25, 50, 75, 100],
+            color: "#000000",
+            fractionDigits: 1
+        }
+    };
+
+    var targetMLmid = document.getElementById('gh1MLmidGauge');
+    var gaugeMLmid = new Gauge(targetMLmid).setOptions(optsMLmid);
+    gaugeMLmid.maxValue = 100;
+    gaugeMLmid.setMinValue(0);
+    gaugeMLmid.animationSpeed = 32;
+    gaugeMLmid.set(gh1MLmid);
+
+    // Water gh1MLend Gauge //
+    var optsMLend = {
+        angle: -0.25,
+        lineWidth: 0.2,
+        radiusScale: 0.9,
+        pointer: {
+            length: 0.6,
+            strokeWidth: 0.05,
+            color: '#000000'
+        },
+        limitMax: false,
+        limitMin: false,
+        colorStart: 'orange',  
+        colorStop: 'orange',
+        strokeColor: '#E0E0E0',
+        generateGradient: true,
+        highDpiSupport: true,
+        staticLabels: {
+            font: "15px sans-serif",
+            labels: [0, 25, 50, 75, 100],
+            color: "#000000",
+            fractionDigits: 1
+        }
+    };
+
+    var targetMLend = document.getElementById('gh1MLendGauge');
+    var gaugeMLend = new Gauge(targetMLend).setOptions(optsMLend);
+    gaugeMLend.maxValue = 100;
+    gaugeMLend.setMinValue(0);
+    gaugeMLend.animationSpeed = 32;
+    gaugeMLend.set(gh1MLend);
 
 </script>
 

@@ -175,21 +175,45 @@ def Home(request):
         ~Q(gh1_ec_be=0), ~Q(gh1_ec_be=None), 
         ~Q(gh1_ec_mid=0), ~Q(gh1_ec_mid=None),
         ~Q(gh1_ec_end=0), ~Q(gh1_ec_end=None),
+        ~Q(gh1_ph_be=0), ~Q(gh1_ph_be=None),
+        ~Q(gh1_ph_mid=0), ~Q(gh1_ph_mid=None),
+        ~Q(gh1_ph_end=0), ~Q(gh1_ph_end=None),
+        ~Q(gh1_ml_be=0), ~Q(gh1_ml_be=None),
+        ~Q(gh1_ml_mid=0), ~Q(gh1_ml_mid=None),
+        ~Q(gh1_ml_end=0), ~Q(gh1_ml_end=None)
         ).order_by('-date').first()
     
     if latest_measurementtwo:
         gh1_ec_be = latest_measurementtwo.gh1_ec_be
         gh1_ec_mid = latest_measurementtwo.gh1_ec_mid
         gh1_ec_end = latest_measurementtwo.gh1_ec_end
+        gh1_ph_be = latest_measurementtwo.gh1_ph_be
+        gh1_ph_mid = latest_measurementtwo.gh1_ph_mid
+        gh1_ph_end = latest_measurementtwo.gh1_ph_end
+        gh1_ml_be = latest_measurementtwo.gh1_ml_be
+        gh1_ml_mid = latest_measurementtwo.gh1_ml_mid
+        gh1_ml_end = latest_measurementtwo.gh1_ml_end
     else:
         gh1_ec_be = 0
         gh1_ec_mid = 0
         gh1_ec_end = 0
+        gh1_ph_be = 0
+        gh1_ph_mid = 0
+        gh1_ph_end = 0
+        gh1_ml_be = 0
+        gh1_ml_mid = 0
+        gh1_ml_end = 0
 
     context = {
         'gh1_ec_be': gh1_ec_be,
         'gh1_ec_mid': gh1_ec_mid,
         'gh1_ec_end': gh1_ec_end,
+        'gh1_ph_be': gh1_ph_be,
+        'gh1_ph_mid': gh1_ph_mid,
+        'gh1_ph_end': gh1_ph_end,
+        'gh1_ml_be': gh1_ml_be,
+        'gh1_ml_mid': gh1_ml_mid,
+        'gh1_ml_end': gh1_ml_end,
     }
 
     return render(request, 'strawberry/home.html', context)
