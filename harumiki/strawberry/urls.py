@@ -6,4 +6,5 @@ urlpatterns = [
     path('dashboard/', Dashboard, name='dashboard'),
     path('ghpage/', GHpage, name='ghpage'),
     path('designui/', DesignUI, name='designui'),
+    path('apipage/', APIPage, name='apipage'),
 ]

@@ -1,0 +1,268 @@
+{% extends 'strawberry/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .item {
+        text-align: center;
+        padding: 10px;
+    }
+    .item-icon {
+        font-size: 50px;
+        color: #4CAF50; /* สีเขียวเพื่อสื่อถึงความปลอดภัยหรือคุณภาพอากาศดี */
+        margin-bottom: 10px;
+    }
+</style>
+
+<br>
+<br>
+<div class="container">
+    <div class="row">
+        <!-- แสดง จาก API ที่ 1 -->
+        <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+            <!-- <div class="item">
+                <div class="item-icon">🌫️</div>
+                <h3><strong>PM2.5</strong></h3>
+                <span>{{ pm25_1 }} µg/m³</span>
+            </div> -->
+            <!-- <div class="item text-center">
+                <div class="item-icon">
+                    <img src="{% static 'images/PM25.png' %}" alt="PM2.5" width="50" height="50">
+                </div>
+                <h3><strong>PM2.5</strong></h3>
+                <span>{{ pm25_1 }} µg/m³</span>
+            </div> -->
+            <div class="item text-center">
+                <div class="item-icon" style="margin-bottom: 10px;">
+                    <img src="{% static 'images/PM25.png' %}" alt="PM2.5" width="50" height="50" class="mx-auto d-block">
+                </div>
+                <h3 style="margin: 0;"><strong>PM2.5</strong></h3>
+                <span style="font-size: 1.2rem; color: #333;">{{ pm25_1 }} µg/m³</span>
+            </div>
+            
+            <canvas id="pm25Gauge1" width="300" height="300"></canvas>
+        </div>
+
+        <!-- แสดง จาก API ที่ 2 -->
+        <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+            <div class="item">
+                <div class="item-icon">🌡️</div>
+                <h3><strong>Temperature</strong></h3>
+                <span>{{ pm25_2 }} °C</span>
+            </div>
+            <canvas id="pm25Gauge2" width="300" height="300"></canvas>
+        </div>
+
+        <!-- แสดง จาก API ที่ 3 -->
+        <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+            <div class="item">
+                <div class="item-icon">💧</div>
+                <h3><strong>Humidity</strong></h3>
+                <span>{{ pm25_3 }} %</span>
+            </div>
+            <canvas id="pm25Gauge3" width="300" height="300"></canvas>
+        </div>
+    </div>
+    <br>
+    <br>
+
+    <div class="row">
+        <!-- แสดง จาก API ที่ 4 -->
+        <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+            <div class="item">
+                <div class="item-icon">💡</div>
+                <h3><strong>Lux</strong></h3>
+                <span>{{ pm25_4 }} lx</span> <!-- ค่าจาก API ที่ 4 เช่น Lux -->
+            </div>
+            <canvas id="pm25Gauge4" width="300" height="300"></canvas>
+        </div>
+    
+        <!-- แสดง จาก API ที่ 5 -->
+        <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+            <div class="item">
+                <div class="item-icon">🌪️</div>
+                <h3><strong>Atmospheric Pressure</strong></h3>
+                <span>{{ pm25_5 }} hPa</span> <!-- ค่าจาก API ที่ 5 เช่น Atmospheric Pressure -->
+            </div>
+            <canvas id="pm25Gauge5" width="300" height="300"></canvas>
+        </div>
+    
+        <!-- แสดง จาก API ที่ 6 -->
+        <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+            <div class="item">
+                <div class="item-icon">🔋</div>
+                <h3><strong>ADC</strong></h3>
+                <span>{{ pm25_6 }} mV</span> <!-- ค่าจาก API ที่ 6 เช่น ADC -->
+            </div>
+            <canvas id="pm25Gauge6" width="300" height="300"></canvas>
+        </div>
+    </div>    
+</div>
+
+<script>
+    // ดึงค่า PM2.5 จาก Django ที่ได้รับจาก API
+    var pm25_1 = parseFloat("{{ pm25_1|escapejs }}");
+    var pm25_2 = parseFloat("{{ pm25_2|escapejs }}");
+    var pm25_3 = parseFloat("{{ pm25_3|escapejs }}");
+    var pm25_4 = parseFloat("{{ pm25_4|escapejs }}");
+    var pm25_5 = parseFloat("{{ pm25_5|escapejs }}");
+    var pm25_6 = parseFloat("{{ pm25_6|escapejs }}");
+
+    // ตรวจสอบค่าที่แปลงได้ในคอนโซล (สำหรับ Debugging)
+    console.log("pm25_1:", pm25_1);
+    console.log("pm25_2:", pm25_2);
+    console.log("pm25_3:", pm25_3);
+    console.log("pm25_4:", pm25_4);
+    console.log("pm25_5:", pm25_5);
+    console.log("pm25_6:", pm25_6);
+
+    // การตั้งค่า Gauge สำหรับ PM2.5 จาก API 1-3
+    var optsPM25_1 = {
+        angle: -0.25,
+        lineWidth: 0.2,
+        radiusScale: 0.9,
+        pointer: {
+            length: 0.6,
+            strokeWidth: 0.05,
+            color: '#000000'
+        },
+        limitMax: true,
+        limitMin: true,
+        colorStart: '#6FADCF',
+        colorStop: '#8FC0DA',
+        strokeColor: '#E0E0E0',
+        generateGradient: true,
+        highDpiSupport: true,
+        staticLabels: {
+            font: "15px sans-serif",
+            labels: [0, 25, 50, 75, 100],
+            color: "#000000",
+            fractionDigits: 0
+        }
+    };
+
+    var targetPM25_1 = document.getElementById('pm25Gauge1');
+    var gaugePM25_1 = new Gauge(targetPM25_1).setOptions(optsPM25_1);
+    gaugePM25_1.maxValue = 100;
+    gaugePM25_1.setMinValue(0);
+    gaugePM25_1.animationSpeed = 32;
+    gaugePM25_1.set(pm25_1);
+
+    // การตั้งค่า Gauge สำหรับ PM2.5 จาก API 2
+    var optsPM25_2 = Object.assign({}, optsPM25_1);  // ใช้ค่าเดียวกับ optsPM25_1
+    var targetPM25_2 = document.getElementById('pm25Gauge2');
+    var gaugePM25_2 = new Gauge(targetPM25_2).setOptions(optsPM25_2);
+    gaugePM25_2.maxValue = 100;
+    gaugePM25_2.setMinValue(0);
+    gaugePM25_2.animationSpeed = 32;
+    gaugePM25_2.set(pm25_2);
+
+    // การตั้งค่า Gauge สำหรับ PM2.5 จาก API 3
+    var optsPM25_3 = Object.assign({}, optsPM25_1);  // ใช้ค่าเดียวกับ optsPM25_1
+    var targetPM25_3 = document.getElementById('pm25Gauge3');
+    var gaugePM25_3 = new Gauge(targetPM25_3).setOptions(optsPM25_3);
+    gaugePM25_3.maxValue = 100;
+    gaugePM25_3.setMinValue(0);
+    gaugePM25_3.animationSpeed = 32;
+    gaugePM25_3.set(pm25_3);
+
+    // การตั้งค่า Gauge สำหรับ Lux จาก API 4
+    var optsPM25_4 = {
+        angle: -0.25,
+        lineWidth: 0.2,
+        radiusScale: 0.9,
+        pointer: {
+            length: 0.6,
+            strokeWidth: 0.05,
+            color: '#000000'
+        },
+        limitMax: true,
+        limitMin: true,
+        colorStart: '#6FADCF',
+        colorStop: '#8FC0DA',
+        strokeColor: '#E0E0E0',
+        generateGradient: true,
+        highDpiSupport: true,
+        staticLabels: {
+            font: "15px sans-serif",
+            labels: [0, 25, 50, 75, 100],
+            color: "#000000",
+            fractionDigits: 0
+        }
+    };
+
+    var targetPM25_4 = document.getElementById('pm25Gauge4');
+    var gaugePM25_4 = new Gauge(targetPM25_4).setOptions(optsPM25_4);
+    gaugePM25_4.maxValue = 100;
+    gaugePM25_4.setMinValue(0);
+    gaugePM25_4.animationSpeed = 32;
+    gaugePM25_4.set(pm25_4);
+
+    // การตั้งค่า Gauge สำหรับ Lux จาก API 5
+    var optsPM25_5 = {
+        angle: -0.25,
+        lineWidth: 0.2,
+        radiusScale: 0.9,
+        pointer: {
+            length: 0.6,
+            strokeWidth: 0.05,
+            color: '#000000'
+        },
+        limitMax: false,
+        limitMin: false,
+        colorStart: '#6FADCF',
+        colorStop: '#8FC0DA',
+        strokeColor: '#E0E0E0',
+        generateGradient: true,
+        highDpiSupport: true,
+        staticLabels: {
+            font: "15px sans-serif",
+            labels: [101100, 101200, 101300, 101400, 101500],
+            color: "#000000",
+            fractionDigits: 0
+        }
+    };
+
+    var targetPM25_5 = document.getElementById('pm25Gauge5');
+    var gaugePM25_5 = new Gauge(targetPM25_5).setOptions(optsPM25_5);
+    gaugePM25_5.maxValue = 101500;
+    gaugePM25_5.setMinValue(101100);
+    gaugePM25_5.animationSpeed = 32;
+    gaugePM25_5.set(pm25_5);
+
+    // การตั้งค่า Gauge สำหรับ Lux จาก API 6
+    var optsPM25_6 = {
+        angle: -0.25,
+        lineWidth: 0.2,
+        radiusScale: 0.9,
+        pointer: {
+            length: 0.6,
+            strokeWidth: 0.05,
+            color: '#000000'
+        },
+        limitMax: false,
+        limitMin: false,
+        colorStart: '#6FADCF',
+        colorStop: '#8FC0DA',
+        strokeColor: '#E0E0E0',
+        generateGradient: true,
+        highDpiSupport: true,
+        staticLabels: {
+            font: "15px sans-serif",
+            labels: [600, 700, 800, 900, 1000],
+            color: "#000000",
+            fractionDigits: 0
+        }
+    };
+
+    var targetPM25_6 = document.getElementById('pm25Gauge6');
+    var gaugePM25_6 = new Gauge(targetPM25_6).setOptions(optsPM25_6);
+    gaugePM25_6.maxValue = 1000;
+    gaugePM25_6.setMinValue(600);
+    gaugePM25_6.animationSpeed = 32;
+    gaugePM25_6.set(pm25_6);
+
+
+</script>
+
+{% endblock content %}

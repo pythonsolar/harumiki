@@ -3,6 +3,7 @@ from .models import *
 import json
 from django.utils.dateparse import parse_date
 from django.db.models import Q
+import requests
 
 # Create your views here.
 def get_zone_data(measurements, prefix):
@@ -217,3 +218,86 @@ def Home(request):
     }
 
     return render(request, 'strawberry/home.html', context)
+
+def APIPage(request):
+    # URL ของ API ทั้ง 3
+    url1 = "https://magellan.ais.co.th/asgardpullmessagesapis/api/listen/thing?Key=43C5EEC426F28564A0DBFEB84588180E"
+    url2 = "https://magellan.ais.co.th/asgardpullmessagesapis/api/listen/thing?Key=68F1140AF50FD5AD4ED1E3FBF2199452"
+    url3 = "https://magellan.ais.co.th/asgardpullmessagesapis/api/listen/thing?Key=14C0883E815D76F64AA08344A7EEE824"
+    url4 = "https://magellan.ais.co.th/asgardpullmessagesapis/api/listen/thing?Key=43C5EEC426F28564A0DBFEB84588180E"
+    url5 = "https://magellan.ais.co.th/asgardpullmessagesapis/api/listen/thing?Key=68F1140AF50FD5AD4ED1E3FBF2199452"
+    url6 = "https://magellan.ais.co.th/asgardpullmessagesapis/api/listen/thing?Key=14C0883E815D76F64AA08344A7EEE824"
+
+    # Factor สำหรับการปรับค่า PM2.5
+    factor1 = 1.0  # Factor สำหรับ API ที่ 1
+    factor2 = 1.0  # Factor สำหรับ API ที่ 2
+    factor3 = 50 # Factor สำหรับ API ที่ 3
+    factor4 = 60
+    factor5 = 101325.0
+    factor6 = 700
+
+    # ดึงข้อมูลจาก API ที่ 1
+    response1 = requests.get(url1)
+    if response1.status_code == 200:
+        data1 = response1.json()
+        pm25_1 = data1.get('Sensor', {}).get('pm25_ma', 0)  # ดึงค่า pm25_ma จาก API 1
+        pm25_1 = pm25_1 * factor1  # ปรับค่าด้วย factor
+    else:
+        pm25_1 = 0
+
+    # ดึงข้อมูลจาก API ที่ 2
+    response2 = requests.get(url2)
+    if response2.status_code == 200:
+        data2 = response2.json()
+        pm25_2 = data2.get('Sensor', {}).get('pm25_ma', 0)  # ดึงค่า pm25_ma จาก API 2
+        pm25_2 = pm25_2 * factor2  # ปรับค่าด้วย factor
+    else:
+        pm25_2 = 0
+
+    # ดึงข้อมูลจาก API ที่ 3
+    response3 = requests.get(url3)
+    if response3.status_code == 200:
+        data3 = response3.json()
+        pm25_3 = data3.get('Sensor', {}).get('pm25_ma', 0)  # ดึงค่า pm25_ma จาก API 3
+        pm25_3 = pm25_3 + factor3  # ปรับค่าด้วย factor
+    else:
+        pm25_3 = 0
+
+    # ดึงข้อมูลจาก API ที่ 4
+    response4 = requests.get(url4)
+    if response4.status_code == 200:
+        data4 = response4.json()
+        pm25_4 = data3.get('Sensor', {}).get('pm25_ma', 0)  # ดึงค่า pm25_ma จาก API 4
+        pm25_4 = pm25_4 + factor4  # ปรับค่าด้วย factor
+    else:
+        pm25_4 = 0
+
+    # ดึงข้อมูลจาก API ที่ 5
+    response5 = requests.get(url5)
+    if response5.status_code == 200:
+        data5 = response5.json()
+        pm25_5 = data5.get('Sensor', {}).get('pm25_ma', 0)  # ดึงค่า pm25_ma จาก API 5
+        pm25_5 = pm25_5 + factor5  # ปรับค่าด้วย factor
+    else:
+        pm25_5 = 0
+
+    # ดึงข้อมูลจาก API ที่ 3
+    response6 = requests.get(url6)
+    if response6.status_code == 200:
+        data6 = response6.json()
+        pm25_6 = data3.get('Sensor', {}).get('pm25_ma', 0)  # ดึงค่า pm25_ma จาก API 6
+        pm25_6 = pm25_6 + factor6  # ปรับค่าด้วย factor
+    else:
+        pm25_6 = 0
+
+    # ส่งค่าผ่าน context ไปยัง HTML template
+    context = {
+        'pm25_1': pm25_1,
+        'pm25_2': pm25_2,
+        'pm25_3': pm25_3,
+        'pm25_4': pm25_4,
+        'pm25_5': pm25_5,
+        'pm25_6': pm25_6,
+    }
+
+    return render(request, 'strawberry/apipage.html', context)
